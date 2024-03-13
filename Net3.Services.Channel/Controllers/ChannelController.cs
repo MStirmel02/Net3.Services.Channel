@@ -22,7 +22,7 @@ namespace Net3.Services.Channel.Controllers
         [Route("/channels/{userId}")]
         [ProducesResponseType(typeof(ResponseModel<ChannelModel>), 200)]
         [ProducesResponseType(typeof(ResponseModel<ChannelModel>), 500)]
-        public async Task<ResponseModel<List<ChannelModel>>> ViewUserChannels([Required][FromRoute] string userId)
+        public async Task<ResponseModel<List<ChannelModel>>> ViewUserChannelsAsync([Required][FromRoute] string userId)
         {
             ResponseModel<List<ChannelModel>> response = new();
             try
@@ -48,12 +48,65 @@ namespace Net3.Services.Channel.Controllers
         [Route("/channels/create")]
         [ProducesResponseType(typeof(ResponseModel<bool>), 200)]
         [ProducesResponseType(typeof(ResponseModel<bool>), 500)]
-        public async Task<ResponseModel<bool>> CreateChannel([Required][FromBody] CreateChannelRequestModel request)
+        public async Task<ResponseModel<bool>> CreateChannelAsync([Required][FromBody] ChannelRequestModel request)
         {
             ResponseModel<bool> response = new();
             try
             {
                 response.Response = await _channelService.CreateChannelAsync(request.channel, request.UserId);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, typeof(ChannelController));
+                return new ResponseModel<bool>
+                {
+                    Error = new Error
+                    {
+                        Code = 500,
+                        Message = ex.Message
+                    }
+                };
+            }
+        }
+
+        [HttpPost]
+        [Route("/channels/join")]
+        [ProducesResponseType(typeof(ResponseModel<bool>), 200)]
+        [ProducesResponseType(typeof(ResponseModel<bool>), 500)]
+        public async Task<ResponseModel<bool>> JoinChannelAsync([Required][FromBody] ChannelRequestModel request)
+        {
+            ResponseModel<bool> response = new();
+            try
+            {
+                response.Response = await _channelService.JoinChannelAsync(request.channel, request.UserId);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, typeof(ChannelController));
+                return new ResponseModel<bool>
+                {
+                    Error = new Error
+                    {
+                        Code = 500,
+                        Message = ex.Message
+                    }
+                };
+            }
+        }
+
+
+        [HttpPost]
+        [Route("/channels/leave")]
+        [ProducesResponseType(typeof(ResponseModel<bool>), 200)]
+        [ProducesResponseType(typeof(ResponseModel<bool>), 500)]
+        public async Task<ResponseModel<bool>> LeaveChannelAsync([Required][FromBody] ChannelRequestModel request)
+        {
+            ResponseModel<bool> response = new();
+            try
+            {
+                response.Response = await _channelService.LeaveChannelAsync(request.channel, request.UserId);
                 return response;
             }
             catch (Exception ex)

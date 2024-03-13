@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Net3.Services.Channel.Services.Models
 {
-    public class CreateChannelRequestModel
+    public class ChannelRequestModel
     {
         public string UserId { get; set; }
 

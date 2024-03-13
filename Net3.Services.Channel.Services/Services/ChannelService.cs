@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Net3.Services.Channel.Services.Models;
 using System.Reflection;
+using System.Threading.Channels;
 
 namespace Net3.Services.Channel.Services.Services
 {
     public class ChannelService : IChannelService
     {
         protected readonly IConfiguration _configuration;
-
         public ChannelService(IConfiguration configuration )
         {
             _configuration = configuration;
@@ -53,7 +53,7 @@ CREATE PROC sp_create_channel(
 
             int result = await SqlExecutor.ExecuteNonQueryAsync(conn, sqlParam, "sp_create_channel");
 
-            return result != 0 ? true : false;
+            return result == 2 ? true : false;
         }
 
         public async Task<List<ChannelModel>> GetUserChannelsAsync(string userId)
@@ -75,7 +75,8 @@ CREATE PROC sp_create_channel(
                 result.Add(new ChannelModel
                 {
                     ChannelId = row["ChannelId"].ToString(),
-                    ChannelRole = row["RoleId"].ToString()
+                    ChannelRole = row["RoleId"].ToString(),
+                    UsersInChannel = int.Parse(row["UsersInchannel"].ToString()),
 
                 });
             }
@@ -83,14 +84,54 @@ CREATE PROC sp_create_channel(
             return result;
         }
 
-        public Task<ChannelModel> JoinChannelAsync()
+        public async Task<bool> JoinChannelAsync(ChannelModel channel, string userId)
         {
-            throw new NotImplementedException();
+            SqlConnection conn = new SqlConnection(_configuration["ConnectionStrings:Database"]);
+            List<SqlParameter> sqlParam = new List<SqlParameter>
+            {
+                new SqlParameter
+                {
+                    ParameterName = "@UserID",
+                    Value = userId
+                },
+                new SqlParameter
+                {
+                    ParameterName = "@ChannelID",
+                    Value = channel.ChannelId
+                },
+                new SqlParameter
+                {
+                    ParameterName = "@ChannelHash",
+                    Value = channel.ChannelHash
+                }
+
+            };
+
+            int result = await SqlExecutor.ExecuteNonQueryAsync(conn, sqlParam, "sp_user_channel_sign_in");
+
+            return result > 0 ? true : false;
         }
 
-        public Task<ChannelModel> LeaveChannelAsync()
+        public async Task<bool> LeaveChannelAsync(ChannelModel channel, string userId)
         {
-            throw new NotImplementedException();
+            SqlConnection conn = new SqlConnection(_configuration["ConnectionStrings:Database"]);
+            List<SqlParameter> sqlParam = new List<SqlParameter>
+            {
+                new SqlParameter
+                {
+                    ParameterName = "@UserID",
+                    Value = userId
+                },
+                new SqlParameter
+                {
+                    ParameterName = "@ChannelID",
+                    Value = channel.ChannelId
+                }
+            };
+
+            int result = await SqlExecutor.ExecuteNonQueryAsync(conn, sqlParam, "sp_user_channel_sign_out");
+
+            return result > 0 ? true : false;
         }
     }
 }

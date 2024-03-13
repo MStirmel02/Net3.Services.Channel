@@ -11,7 +11,7 @@ namespace Net3.Services.Channel.Services.Services
     {
         Task<List<ChannelModel>> GetUserChannelsAsync(string userId);
         Task<bool> CreateChannelAsync(ChannelModel channel, string userId);
-        Task<ChannelModel> JoinChannelAsync();
-        Task<ChannelModel> LeaveChannelAsync();
+        Task<bool> JoinChannelAsync(ChannelModel channel, string userId);
+        Task<bool> LeaveChannelAsync(ChannelModel channel, string userId);
     }
 }
