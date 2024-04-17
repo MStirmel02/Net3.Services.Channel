@@ -53,7 +53,7 @@ CREATE PROC sp_create_channel(
 
             int result = await SqlExecutor.ExecuteNonQueryAsync(conn, sqlParam, "sp_create_channel");
 
-            return result == 2 ? true : false;
+            return result == 2;
         }
 
         public async Task<List<ChannelModel>> GetUserChannelsAsync(string userId)
@@ -109,7 +109,7 @@ CREATE PROC sp_create_channel(
 
             int result = await SqlExecutor.ExecuteNonQueryAsync(conn, sqlParam, "sp_user_channel_sign_in");
 
-            return result > 0 ? true : false;
+            return result > 0;
         }
 
         public async Task<bool> LeaveChannelAsync(ChannelModel channel, string userId)
@@ -131,7 +131,7 @@ CREATE PROC sp_create_channel(
 
             int result = await SqlExecutor.ExecuteNonQueryAsync(conn, sqlParam, "sp_user_channel_sign_out");
 
-            return result > 0 ? true : false;
+            return result > 0;
         }
     }
 }
