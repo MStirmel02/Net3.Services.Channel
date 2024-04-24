@@ -122,5 +122,31 @@ namespace Net3.Services.Channel.Controllers
                 };
             }
         }
+
+        [HttpPost]
+        [Route("/channels/delete")]
+        [ProducesResponseType(typeof(ResponseModel<bool>), 200)]
+        [ProducesResponseType(typeof(ResponseModel<bool>), 500)]
+        public async Task<ResponseModel<bool>> DeleteChannelAsync([Required][FromBody] ChannelModel request)
+        {
+            ResponseModel<bool> response = new();
+            try
+            {
+                response.Response = await _channelService.DeleteChannelAsync(request);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, typeof(ChannelController));
+                return new ResponseModel<bool>
+                {
+                    Error = new Error
+                    {
+                        Code = 500,
+                        Message = ex.Message
+                    }
+                };
+            }
+        }
     }
 }

@@ -77,7 +77,7 @@ CREATE PROC sp_create_channel(
                     ChannelId = row["ChannelId"].ToString(),
                     ChannelRole = row["RoleId"].ToString(),
                     UsersInChannel = int.Parse(row["UsersInchannel"].ToString()),
-
+                    Deleted = false
                 });
             }
 
@@ -132,6 +132,24 @@ CREATE PROC sp_create_channel(
             int result = await SqlExecutor.ExecuteNonQueryAsync(conn, sqlParam, "sp_user_channel_sign_out");
 
             return result > 0;
+        }
+
+        public async Task<bool> DeleteChannelAsync(ChannelModel channel)
+        {
+            SqlConnection conn = new SqlConnection(_configuration["ConnectionStrings:Database"]);
+            List<SqlParameter> sqlParam = new List<SqlParameter>
+            {
+                new SqlParameter
+                {
+                    ParameterName = "@ChannelID",
+                    Value = channel.ChannelId
+                }
+            };
+
+            int result = await SqlExecutor.ExecuteNonQueryAsync(conn, sqlParam, "sp_delete_channel");
+
+            return result > 0;
+
         }
     }
 }
