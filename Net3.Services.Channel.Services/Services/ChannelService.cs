@@ -151,5 +151,24 @@ CREATE PROC sp_create_channel(
             return result > 0;
 
         }
+
+        public async Task<List<AdminChannelModel>> GetAllChannelsAsync()
+        {
+            SqlConnection conn = new SqlConnection(_configuration["ConnectionStrings:Database"]);
+            List<SqlParameter> sqlParam = new List<SqlParameter>();
+
+            DataSet ds = await SqlExecutor.ExecuteQueryAsync(conn, sqlParam, "sp_select_all_channels");
+            List<AdminChannelModel> result = new List<AdminChannelModel>();
+            foreach (DataRow row in ds.Tables[0].Rows)
+            {
+                result.Add(new AdminChannelModel
+                {
+                    ChannelId = row["ChannelId"].ToString(),
+                    UsersInChannel = int.Parse(row["UsersInchannel"].ToString()),
+                });
+            }
+
+            return result;
+        }
     }
 }

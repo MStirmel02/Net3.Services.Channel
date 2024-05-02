@@ -148,5 +148,31 @@ namespace Net3.Services.Channel.Controllers
                 };
             }
         }
+
+        [HttpGet]
+        [Route("/channels")]
+        [ProducesResponseType(typeof(ResponseModel<List<AdminChannelModel>>), 200)]
+        [ProducesResponseType(typeof(ResponseModel<List<AdminChannelModel>>), 500)]
+        public async Task<ResponseModel<List<AdminChannelModel>>> GetUsersByChannelAsync()
+        {
+            ResponseModel<List<AdminChannelModel>> response = new();
+            try
+            {
+                response.Response = await _channelService.GetAllChannelsAsync();
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, typeof(ChannelController));
+                return new ResponseModel<List<AdminChannelModel>>
+                {
+                    Error = new Error
+                    {
+                        Code = 500,
+                        Message = ex.Message
+                    }
+                };
+            }
+        }
     }
 }

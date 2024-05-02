@@ -14,5 +14,6 @@ namespace Net3.Services.Channel.Services.Services
         Task<bool> JoinChannelAsync(ChannelModel channel, string userId);
         Task<bool> LeaveChannelAsync(ChannelModel channel, string userId);
         Task<bool> DeleteChannelAsync(ChannelModel channel);
+        Task<List<AdminChannelModel>> GetAllChannelsAsync();
     }
 }
